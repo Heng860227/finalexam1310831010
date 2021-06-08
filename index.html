@@ -1,0 +1,82 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>zoo animal</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
+    <link href="css/bootstrap.min.css" rel="stylesheet" /> 
+</head>
+<body background="BG.jpg">
+    <!-- As a link -->
+
+<script type="text/javascript">
+    function processImage() {
+        // **********************************************
+        // *** Update or verify the following values. ***
+        // **********************************************
+        
+        let subscriptionKey = '7ef334206e98483b9071b18ec72e9d4e';
+        let endpoint = 'https://southcentralus.api.cognitive.microsoft.com/customvision/v3.0/Prediction/1f2a3708-6033-4210-ae32-b631ceac14ab/classify/iterations/Iteration1/url';
+        if (!subscriptionKey) { throw new Error('Set your environment variables for your subscription key and endpoint.'); }
+        
+        // Display the image.
+        var sourceImageUrl = document.getElementById("inputImage").value;
+        document.querySelector("#sourceImage").src = sourceImageUrl;
+
+        // Make the REST API call.
+        $.ajax({
+            url: endpoint + "?",
+
+            // Request headers.
+            beforeSend: function(xhrObj){
+                xhrObj.setRequestHeader("Content-Type","application/json");
+                xhrObj.setRequestHeader("Prediction-Key", subscriptionKey);
+            },
+
+            type: "POST",
+
+            // Request body.
+            data: '{"url": ' + '"' + sourceImageUrl + '"}',
+        })
+
+        .done(function(data) {
+            // Show formatted JSON on webpage.
+            $("#responseTextArea").val(JSON.stringify(data, null, 2));
+        })
+
+        .fail(function(jqXHR, textStatus, errorThrown) {
+            // Display error message.
+            var errorString = (errorThrown === "") ? "Error. " :
+                errorThrown + " (" + jqXHR.status + "): ";
+            errorString += (jqXHR.responseText === "") ? "" :
+                jQuery.parseJSON(jqXHR.responseText).message;
+            alert(errorString);
+        });
+    };
+</script>
+<center><h1 style="color: darkblue; text-align: center; font-size: 50px; text-shadow: 3px 3px 10px lawngreen; font-weight: bolder;">分析圖像</h1>
+<br><br>
+<h2 style="text-align:center; color: purple;font-weight: bolder">圖片必須是lion，bear，gorilla，hippo，giraffe，elephant pic以上六種相關圖片</h2>
+Image to analyze:
+<input type="text" name="inputImage" id="inputImage"
+    value="https://cw1.tw/CW/images/article/C1464755367322.jpg" />
+<button style="text-align: center;" onclick="processImage()">Analyze image</button>
+<p style="color: sienna; font-weight: 30; font-size: 20px;">辨識結果需要稍等....</p>
+<br>
+<div style="color: #4D1F00; text-shadow: crimson; font-size: 30px; font-weight: bolder" >結果回應:</div>
+<div id="wrapper" style="width:1020px; align-items:center; display:table;">
+    <div id="jsonOutput" style="width:600px; display:table-cell;text-align: center; color:red; font-size: 20px; font-weight: bolder;">
+        開始分析
+        <br><br>
+        <textarea id="responseTextArea" class="UIInput"
+                  style="width:400px; height:400px; text-align: center;"></textarea>
+    </div>
+    <div id="imageDiv" style="width:420px; display:table-cell; text-align: center; color: blue; font-size: 20px;font-weight: bolder;">
+        來源圖像
+        <br><br>
+        <img id="sourceImage" width="600" />
+       
+    </div>
+<br><br>
+</div></center>
+</body>
+</html>
